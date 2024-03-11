@@ -1,0 +1,42 @@
+[
+  {
+    "License": "Mozilla Public License 2.0 (MPL 2.0)",
+    "Name": "certifi",
+    "Version": "2023.11.17"
+  },
+  {
+    "License": "MIT License",
+    "Name": "charset-normalizer",
+    "Version": "3.3.2"
+  },
+  {
+    "License": "Apache Software License",
+    "Name": "fl-demonstrator-client",
+    "Version": "0.0.2.dev0"
+  },
+  {
+    "License": "BSD License",
+    "Name": "idna",
+    "Version": "3.6"
+  },
+  {
+    "License": "Apache Software License",
+    "Name": "importlib-metadata",
+    "Version": "7.0.1"
+  },
+  {
+    "License": "Apache Software License",
+    "Name": "requests",
+    "Version": "2.31.0"
+  },
+  {
+    "License": "MIT License",
+    "Name": "urllib3",
+    "Version": "2.1.0"
+  },
+  {
+    "License": "MIT License",
+    "Name": "zipp",
+    "Version": "3.17.0"
+  }
+]

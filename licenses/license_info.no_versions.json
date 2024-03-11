@@ -1,0 +1,34 @@
+[
+  {
+    "License": "Mozilla Public License 2.0 (MPL 2.0)",
+    "Name": "certifi"
+  },
+  {
+    "License": "MIT License",
+    "Name": "charset-normalizer"
+  },
+  {
+    "License": "Apache Software License",
+    "Name": "fl-demonstrator-client"
+  },
+  {
+    "License": "BSD License",
+    "Name": "idna"
+  },
+  {
+    "License": "Apache Software License",
+    "Name": "importlib-metadata"
+  },
+  {
+    "License": "Apache Software License",
+    "Name": "requests"
+  },
+  {
+    "License": "MIT License",
+    "Name": "urllib3"
+  },
+  {
+    "License": "MIT License",
+    "Name": "zipp"
+  }
+]
