@@ -1,15 +1,26 @@
+# SPDX-FileCopyrightText: 2024 Benedikt Franke <benedikt.franke@dlr.de>
+# SPDX-FileCopyrightText: 2024 Florian Heinrich <florian.heinrich@dlr.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 import base64
+from io import BytesIO
 import logging
-import pickle
 import requests
 from subprocess import Popen
+import torch
 from typing import Any, Dict, Type, TypeVar
 from uuid import UUID
+import warnings
 
 from .exceptions import MetricsUploadException, ModelDownloadException, ModelUploadException
 
 
 T = TypeVar("T", bound="Communication")
+
+
+def is_torchscript_instance(obj: Any) -> bool:
+    return isinstance(obj, torch.jit.ScriptModule | torch.jit.ScriptFunction)
 
 
 class Communication:
@@ -227,7 +238,7 @@ class Communication:
         if response.status_code != 200:
             self._logger.error(f"model download response with status code: {response.status_code}")
             raise ModelDownloadException(response)
-        return self.unpickle_model(response.content)
+        return self.unpack_model(response.content)
 
     def upload_model(self, model: Any, metrics: Dict[str, Any], sample_size: int) -> bool:
         """
@@ -256,7 +267,7 @@ class Communication:
                 "metric_values": list(metrics.values()),
             },
             files={
-                "model_file": self.pickle_model(model),
+                "model_file": self.pack_model(model),
             },
             headers=self.get_headers()
         )
@@ -307,26 +318,40 @@ class Communication:
             "Authorization": self.http_authorization,
         }
 
-    def unpickle_model(self, blob: bytes) -> Any:
+    def unpack_model(self, blob: bytes) -> Any:
         """
-        Unpickle a model from a blob.
+        Unpack a model from a blob.
 
         Args:
-            blob (bytes): data blob to unpickle
+            blob (bytes): data blob to unpack
 
         Returns:
-            Any: unpickled model
+            Any: unpack model
         """
-        return pickle.loads(blob)
+        # torch.load support torch.nn.Module as well as torchscript (but with user warning)
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore",
+                message="'torch.load' received a zip file that looks like a TorchScript archive",
+                category=UserWarning
+            )
+            return torch.load(BytesIO(blob))
 
-    def pickle_model(self, model: Any) -> bytes:
+    def pack_model(self, model: Any) -> bytes:
         """
-        Pickle a model to a blob.
+        Pack a model to a blob.
 
         Args:
-            model (Any): data (model) to pickle
+            model (Any): data (model) to pack
 
         Returns:
             bytes: data blob
         """
-        return pickle.dumps(model)
+        buffer = BytesIO()
+        if is_torchscript_instance(model):
+            self._logger.debug("save torchscript model")
+            torch.jit.save(model, buffer)
+        else:
+            self._logger.debug("save torch model")
+            torch.save(model, buffer)
+        return buffer.getvalue()

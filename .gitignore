@@ -1,5 +1,11 @@
+# SPDX-FileCopyrightText: 2024 Benedikt Franke <benedikt.franke@dlr.de>
+# SPDX-FileCopyrightText: 2024 Florian Heinrich <florian.heinrich@dlr.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 /builds/
 /out/
+/node_modules/
 
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,intellij,windows,linux,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,intellij,windows,linux,python

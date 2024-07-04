@@ -1,4 +1,10 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: 2024 Benedikt Franke <benedikt.franke@dlr.de>
+# SPDX-FileCopyrightText: 2024 Florian Heinrich <florian.heinrich@dlr.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 ###############################################################################
 # Helper commands #
 ###################
@@ -63,8 +69,7 @@ function help() {
   info2 "    coverage-report     Generate test coverage report"
   info2 "    doc                 Start documentation server"
   info2 "    doc-build           Build documentation"
-  info2 "    licenses            Generate licenses"
-  info2 "    licenses-check      Check licenses"
+  info2 "    licenses            Check licenses"
   info2 "    safety-check        Check dependencies for known security vulnerabilities"
   info2 "    install             Install package"
   info2 "    clean               Clean up local files"
@@ -247,16 +252,10 @@ function doc-build() {
 }
 
 function licenses() {
-  info "generate licenses"
-  # create a tox environment and pull in license information
-  license_dir="${PROJECT_ROOT}/licenses"
-  mkdir -p "${license_dir}"
-  python -m tox --recreate -e licenses
-}
-
-function licenses-check() {
-  # check if there has been a change in license information, used in CI
-  git --no-pager diff --exit-code "${PROJECT_ROOT}/licenses/license_info.no_versions.csv"
+  info "search for license conflicts"
+  licensecheck
+  info "search for non-compliant files with REUSE"
+  python -m reuse lint
 }
 
 function safety-check() {
