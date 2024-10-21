@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: 2024 Benedikt Franke <benedikt.franke@dlr.de>
+# SPDX-FileCopyrightText: 2024 Florian Heinrich <florian.heinrich@dlr.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: DLR Federated Learning Client
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Florian
+    family-names: Heinrich
+    email: florian.heinrich@dlr.de
+    affiliation: German Aerospace Center (DLR)
+    orcid: 'https://orcid.org/0009-0007-0792-7908'
+  - given-names: Benedikt
+    family-names: Franke
+    email: benedikt.franke@dlr.de
+    affiliation: German Aerospace Center (DLR)
+    orcid: 'https://orcid.org/0000-0003-0202-2804'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.13951227
+repository-code: 'https://github.com/DLR-KI/fl-demonstrator-client'
+url: 'https://dlr-ki.github.io/fl-demonstrator-client/'
+keywords:
+  - Federated Machine Learning
+  - Python
