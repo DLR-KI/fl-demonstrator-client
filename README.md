@@ -7,6 +7,8 @@ SPDX-License-Identifier: Apache-2.0
 
 # Federated Learning Client Base Image
 
+[![DOI](https://zenodo.org/badge/770414398.svg)](https://doi.org/10.5281/zenodo.13951226 )
+
 This repository provides a small client base package including client server communication helpers.
 This package should simplify the Federated Learning platform client development in Python.
 
