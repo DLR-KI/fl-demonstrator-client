@@ -86,8 +86,7 @@ function version() {
 
 function versions() {
   info "versions"
-  info "$(python --version)"
-  info "$(python -m pip --version)"
+  info "$(uv --version)"
   if ! command -v docker > /dev/null 2>&1; then
     warn "docker not found, skipping docker version"
   else
@@ -101,26 +100,23 @@ function versions() {
 function install() {
   versions
   info "install package"
-  if [ "$#" -eq "0" ]; then
-    python -m pip install -e .
-  else
-    python -m pip install "$@"
+  uv sync --editable --all-extras
 
-    # check if "doc" extra should be installed
-    install_doc=false
-    for value in "$@"; do
-      value="${value//[[:blank:]]/}"
-      [[ "$value" =~ \[(.*,)?(doc|all)(,.*)?\] ]] && install_doc=true
-    done
-    if [[ "$install_doc" == "true" ]]; then
-      info "install markdown linter"
-      if command -v npm > /dev/null 2>&1; then
-        npm install --no-save markdownlint-cli2
-      else
-        warn "npm not found, skipping markdownlint-cli2 installation"
-      fi
+  # check if "doc" extra should be installed
+  install_doc=false
+  for value in "$@"; do
+    value="${value//[[:blank:]]/}"
+    [[ "$value" =~ \[(.*,)?(doc|all)(,.*)?\] ]] && install_doc=true
+  done
+  if [[ "$install_doc" == "true" ]]; then
+    info "install markdown linter"
+    if command -v npm > /dev/null 2>&1; then
+      npm install --no-save markdownlint-cli2
+    else
+      warn "npm not found, skipping markdownlint-cli2 installation"
     fi
   fi
+
   #info "post-install"
   #py_pack_dir="$(python -c 'import site; print(site.getsitepackages()[0])')"
   #info " + setup user documentation plugins"
@@ -166,7 +162,7 @@ function test() {
   coverage-report
   if [ "${HTTP_SERVE}" = "true" ]; then
     if [ -d "${BUILD_ROOT}/htmlcov" ]; then
-      python -m http.server --directory "${BUILD_ROOT}/htmlcov" 8080
+      uv run -m http.server --directory "${BUILD_ROOT}/htmlcov" 8080
     else
       error "no coverage report found"
       exit 1
@@ -184,9 +180,9 @@ function lint() {
 
 function lint-code() {
   info "lint code"
-  info "flake8 version: $(python -m flake8 --version | xargs)"
-  python -m flake8 "${PACKAGE_ROOT}"
-  python -m flake8 "${SCRIPTS_ROOT}"
+  info "flake8 version: $(uv run -m flake8 --version | xargs)"
+  uv run -m flake8 "${PACKAGE_ROOT}"
+  uv run -m flake8 "${SCRIPTS_ROOT}"
 }
 
 function lint-doc() {
@@ -198,16 +194,16 @@ function lint-doc() {
 
 function lint-scripts() {
   info "lint bash scripts"
-  info "shellcheck $(shellcheck --version | head -n 2 | tail -n 1)"
-  shellcheck --external-sources --shell bash --source-path "${PROJECT_ROOT}" "${PROJECT_ROOT}/dev"
-  shellcheck --external-sources --shell bash --source-path "${SCRIPTS_ROOT}" "${SCRIPTS_ROOT}/"*.sh
+  info "shellcheck $(uv run shellcheck --version | head -n 2 | tail -n 1)"
+  uv run shellcheck --external-sources --shell bash --source-path "${PROJECT_ROOT}" "${PROJECT_ROOT}/dev"
+  uv run shellcheck --external-sources --shell bash --source-path "${SCRIPTS_ROOT}" "${SCRIPTS_ROOT}/"*.sh
 }
 
 function mypy() {
   info "type checking"
-  python -m mypy "${PACKAGE_ROOT}"
+  uv run -m mypy "${PACKAGE_ROOT}"
   if find "${SCRIPTS_ROOT}" -type f -name "*.py" | grep -q .; then
-    python -m mypy "${SCRIPTS_ROOT}"
+    uv run -m mypy "${SCRIPTS_ROOT}"
   fi
 }
 
@@ -226,8 +222,8 @@ function coverage-report() {
 
 function doc() {
   versions
-  mkdocs_version="$(python -m mkdocs --version)"
-  info "${mkdocs_version#"python -m "}"
+  mkdocs_version="$(uv run -m mkdocs --version)"
+  info "${mkdocs_version#"uv run -m "}"
   info "start documentation server"
   # check if the user has passed the --dirtyreload flag
   dirty_flag=false
@@ -240,28 +236,28 @@ function doc() {
     warn "documentation development."
   fi
   # create and serve documentation
-  python -m mkdocs serve "$@"
+  uv run -m mkdocs serve "$@"
 }
 
 function doc-build() {
   versions
-  mkdocs_version="$(python -m mkdocs --version)"
-  info "${mkdocs_version#"python -m "}"
+  mkdocs_version="$(uv run -m mkdocs --version)"
+  info "${mkdocs_version#"uv run -m "}"
   info "build documentation"
-  python -m mkdocs build "$@"
+  uv run -m mkdocs build "$@"
 }
 
 function licenses() {
   info "search for license conflicts"
   licensecheck
   info "search for non-compliant files with REUSE"
-  python -m reuse lint
+  uv run -m reuse lint
 }
 
 function safety-check() {
   info "check dependencies for known security vulnerabilities"
   # main only no dev dependencies etc.
-  python -m tox --recreate -e safety
+  uv run -m tox --recreate -e safety
   # alternative
   #python -m pip install -U safety
   #safety check
