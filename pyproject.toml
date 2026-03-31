@@ -141,7 +141,15 @@ stubs = [
   "types-requests",
 ]
 doc = [
-  "zensical",
+  "mkdocs",
+  "mkdocs-awesome-pages-plugin",
+  "mkdocs-git-revision-date-localized-plugin",
+  "mkdocs-material",
+  "mkdocs-minify-plugin",
+  "mkdocs-api-autonav",
+  "mkdocstrings",
+  "mkdocstrings-python",
+  "pymdown-extensions",
 ]
 all = ["fl-demonstrator-client[dev,test,stubs,doc]"]
 
