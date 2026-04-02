@@ -87,7 +87,7 @@ class ClientServerHandler(BaseHTTPRequestHandler):
                 self.send_response(200)
             case _:
                 status_code = Communication.unknown_message(
-                    mesage_type=data["notification_type"],
+                    message_type=notification_type,
                     training_id=training_id,
                     data=data["data"],
                 )
