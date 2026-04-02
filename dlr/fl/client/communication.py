@@ -198,20 +198,20 @@ class Communication:
         print("Training is finished. Start clean up und shutdown :D")
 
     @classmethod
-    def unknown_message(cls: Type[T], mesage_type: str, training_id: UUID, data: Any) -> int:
+    def unknown_message(cls: Type[T], message_type: str, training_id: UUID, data: Any) -> int:
         """
         Handle an unknown notification from the server.
 
         Args:
+            message_type (UUID): Type if the message
             training_id (UUID): UUID of the training
-            model_id (UUID): UUID of the global model
             data (Any): notification body
 
         Returns:
             int: http response status code
         """
         cls._logger.warn("unknown server message")
-        print(f"Known message. Ignore message of type: {mesage_type}")
+        print(f"Known message. Ignore message of type: {message_type}")
         return 400
 
     ###################################################################################################################

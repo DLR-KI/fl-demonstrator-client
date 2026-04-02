@@ -84,7 +84,11 @@ function version() {
 
 function versions() {
   info "versions"
-  info "$(uv --version)"
+  if ! command -v docker > /dev/null 2>&1; then
+    warn "uv not found, skipping uv version"
+  else
+    info "uv version: $(uv --version)"
+  fi
   if ! command -v docker > /dev/null 2>&1; then
     warn "docker not found, skipping docker version"
   else
@@ -97,28 +101,16 @@ function versions() {
 
 function install() {
   versions
-  info "install package"
-  uv sync --editable --all-extras
-
-  # check if "doc" extra should be installed
-  install_doc=false
-  for value in "$@"; do
-    value="${value//[[:blank:]]/}"
-    [[ "$value" =~ \[(.*,)?(doc|all)(,.*)?\] ]] && install_doc=true
-  done
-  if [[ "$install_doc" == "true" ]]; then
-    info "install markdown linter"
-    if command -v npm > /dev/null 2>&1; then
-      npm install --no-save markdownlint-cli2
-    else
-      warn "npm not found, skipping markdownlint-cli2 installation"
+  if ! command -v uv &> /dev/null; then
+    if ! command -v curl &> /dev/null; then
+      error "uv and curl are not installed. Please install one of them."
+      exit 1
     fi
+    info "install uv"
+    curl -LsSf https://astral.sh/uv/install.sh | sh
   fi
-
-  #info "post-install"
-  #py_pack_dir="$(python -c 'import site; print(site.getsitepackages()[0])')"
-  #info " + setup user documentation plugins"
-  #cp "$py_pack_dir/plantuml_markdown.py" "$py_pack_dir/markdown/extensions/"
+  info "install package"
+  uv sync --all-extras
 }
 
 function clean() {
@@ -178,16 +170,16 @@ function lint() {
 
 function lint-code() {
   info "lint code"
-  info "flake8 version: $(uv run -m flake8 --version | xargs)"
-  uv run -m flake8 "${PACKAGE_ROOT}"
-  uv run -m flake8 "${SCRIPTS_ROOT}"
+  info "flake8 version: $(uv run flake8 --version | xargs)"
+  uv run flake8 "${PACKAGE_ROOT}"
+  uv run flake8 "${SCRIPTS_ROOT}"
 }
 
 function lint-doc() {
   info "lint documentation"
   # use markdownlint from David Anson (based on nodejs)
   # https://github.com/DavidAnson/markdownlint
-  npm exec markdownlint-cli2 "${DOC_ROOT}/**/*.md" "${PROJECT_ROOT}/README.md"
+  npm exec "markdownlint-cli2@0.22.0" -- "${DOC_ROOT}/**/*.md" "${PROJECT_ROOT}/README.md"
 }
 
 function lint-scripts() {
@@ -199,29 +191,29 @@ function lint-scripts() {
 
 function mypy() {
   info "type checking"
-  uv run -m mypy "${PACKAGE_ROOT}"
+  uv run mypy "${PACKAGE_ROOT}"
   if find "${SCRIPTS_ROOT}" -type f -name "*.py" | grep -q .; then
-    uv run -m mypy "${SCRIPTS_ROOT}"
+    uv run mypy "${SCRIPTS_ROOT}"
   fi
 }
 
 function coverage() {
   info "run python tests with coverage"
   warn "no tests implemented yet"
-  #python -m coverage run -m pytest
-  #python -m coverage html --directory "${BUILD_ROOT}/htmlcov"
+  #uv run coverage run -m pytest
+  #uv run coverage html --directory "${BUILD_ROOT}/htmlcov"
 }
 
 function coverage-report() {
   info "print test coverage report"
   warn "no tests implemented yet"
-  #python -m coverage report
+  #uv run coverage report
 }
 
 function doc() {
   versions
-  mkdocs_version="$(uv run -m mkdocs --version)"
-  info "${mkdocs_version#"uv run -m "}"
+  mkdocs_version="$(uv run mkdocs --version)"
+  info "${mkdocs_version#"uv run "}"
   info "start documentation server"
   # check if the user has passed the --dirtyreload flag
   dirty_flag=false
@@ -234,32 +226,28 @@ function doc() {
     warn "documentation development."
   fi
   # create and serve documentation
-  uv run -m mkdocs serve "$@"
+  uv run mkdocs serve "$@"
 }
 
 function doc-build() {
   versions
-  mkdocs_version="$(uv run -m mkdocs --version)"
-  info "${mkdocs_version#"uv run -m "}"
+  mkdocs_version="$(uv run mkdocs --version)"
+  info "${mkdocs_version#"uv run "}"
   info "build documentation"
-  uv run -m mkdocs build "$@"
+  uv run mkdocs build "$@"
 }
 
 function licenses() {
   info "search for license conflicts"
   uv run licensecheck
   info "search for non-compliant files with REUSE"
-  uv run -m reuse lint
+  uv run reuse lint
 }
 
 function safety-check() {
   info "check dependencies for known security vulnerabilities"
   # main only no dev dependencies etc.
-  uv run -m tox --recreate -e safety
-  # alternative
-  #python -m pip install -U safety
-  #safety check
-  ##python -m pip uninstall safety
+  uv run tox --recreate -e safety
 }
 
 
