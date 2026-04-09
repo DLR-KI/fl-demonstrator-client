@@ -1,6 +1,4 @@
-# SPDX-FileCopyrightText: 2024 Benedikt Franke <benedikt.franke@dlr.de>
-# SPDX-FileCopyrightText: 2024 Florian Heinrich <florian.heinrich@dlr.de>
-#
+# SPDX-FileCopyrightText: 2026 German Aerospace Center (DLR)
 # SPDX-License-Identifier: Apache-2.0
 
 from http.server import BaseHTTPRequestHandler
@@ -89,7 +87,7 @@ class ClientServerHandler(BaseHTTPRequestHandler):
                 self.send_response(200)
             case _:
                 status_code = Communication.unknown_message(
-                    mesage_type=data["notification_type"],
+                    message_type=notification_type,
                     training_id=training_id,
                     data=data["data"],
                 )

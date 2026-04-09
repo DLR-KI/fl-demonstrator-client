@@ -1,7 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2024 Benedikt Franke <benedikt.franke@dlr.de>
-SPDX-FileCopyrightText: 2024 Florian Heinrich <florian.heinrich@dlr.de>
-
+SPDX-FileCopyrightText: 2026 German Aerospace Center (DLR)
 SPDX-License-Identifier: Apache-2.0
 -->
 
@@ -29,27 +27,16 @@ An example of how this package can be used is the [MNIST example client](https:/
 
 ## Requirements
 
-- python 3.7 or later  
+- Python 3.10 or later  
   `which python`
-- virtualenv or venv  
-  `pip install -U virtualenv`
+- [uv](https://docs.astral.sh/uv/)  
+  `curl -LsSf https://astral.sh/uv/install.sh | sh`
 
 ## Install
 
 ```bash
-# create virtual environment
-virtualenv -p $(which python3.7) .venv
-# or
-# python -m venv .venv
-
-# activate our virtual environment
-source .venv/bin/activate
-
-# update pip (optional)
-python -m pip install -U pip
-
-# install
-./dev install -U -e ".[all]"
+# create virtual environment and install dependencies
+./dev install
 ```
 
 ## Helpers
