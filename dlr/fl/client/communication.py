@@ -333,7 +333,7 @@ class Communication:
                 message="'torch.load' received a zip file that looks like a TorchScript archive",
                 category=UserWarning
             )
-            return torch.load(BytesIO(blob))
+            return torch.load(BytesIO(blob), weights_only=False)
 
     def pack_model(self, model: Any) -> bytes:
         """
